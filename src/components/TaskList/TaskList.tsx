@@ -5,12 +5,14 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { deleteTask, toggleTaskCompleted, updateTaskTitle } from '../../features/tasks/tasksSlice';
 import type { TaskFilter } from '../../types/Filters';
 import { TaskItem } from '../TaskItem/TaskItem';
+import { TaskSearch } from '../TaskSearch/TaskSearch';
 import styles from './TaskList.module.scss';
 
 export const TaskList = () => {
   const [isEditing, setIsEditing] = useState<number>(0);
   const [deleteWithoutConfirm, setDeleteWithoutConfirm] = useState(false);
   const [filter, setFilter] = useState<TaskFilter>('all');
+  const [search, setSearch] = useState('');
   const dispatch = useAppDispatch();
   const tasks = useAppSelector((state) => state.tasks.tasks);
 
@@ -56,6 +58,12 @@ export const TaskList = () => {
 
   // Фильтрация задач
   const filteredTasks = tasks.filter((task) => {
+    const isMatchSearch = task.title.toLowerCase().includes(search.trim().toLowerCase());
+
+    if (!isMatchSearch) {
+      return false;
+    }
+
     if (filter === 'active') {
       return !task.completed;
     }
@@ -68,8 +76,9 @@ export const TaskList = () => {
   });
 
   // Текст для пустого списка
-  const emptyText =
-    filter === 'active'
+  const emptyText = search.trim()
+    ? 'По вашему запросу задачи не найдены'
+    : filter === 'active'
       ? 'Нет активных задач'
       : filter === 'completed'
         ? 'Нет выполненных задач'
@@ -107,6 +116,8 @@ export const TaskList = () => {
         }}
         label="Удалять без подтверждения"
       />
+
+      <TaskSearch value={search} onChange={setSearch} />
 
       <Group gap="xs">
         <Button variant={filter === 'all' ? 'filled' : 'light'} onClick={() => setFilter('all')}>
