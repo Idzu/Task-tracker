@@ -2,6 +2,8 @@ import { notifications } from '@mantine/notifications';
 import { Button, Stack, Textarea, Title } from '@mantine/core';
 import React, { useState } from 'react';
 import z from 'zod';
+import { useAppDispatch } from '../../app/hooks';
+import { addTask } from '../../features/tasks/tasksSlice';
 
 // Схема валидации
 const taskFormSchema = z.object({
@@ -12,6 +14,7 @@ export const TaskForm = () => {
   // Состояния
   const [task, setTask] = useState('');
   const [error, setError] = useState('');
+  const dispatch = useAppDispatch();
 
   // Проверка валидации
   const validateTask = (v: string) => {
@@ -34,7 +37,7 @@ export const TaskForm = () => {
   };
 
   // Добавление задачи
-  const addTask = (event: React.SyntheticEvent<HTMLFormElement>) => {
+  const addTaskForm = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Валидация формы
@@ -44,6 +47,8 @@ export const TaskForm = () => {
     }
 
     // Сохранение данных
+    dispatch(addTask(task.trim()));
+
     notifications.show({
       color: 'green',
       title: 'Успешно',
@@ -57,7 +62,7 @@ export const TaskForm = () => {
 
   return (
     <div>
-      <form onSubmit={addTask}>
+      <form onSubmit={addTaskForm}>
         <Stack>
           <Title>Добавление задачи</Title>
           <Textarea
