@@ -1,9 +1,9 @@
 import { notifications } from '@mantine/notifications';
-import { Button, Checkbox, Group, Stack, Text } from '@mantine/core';
+import { Button, Checkbox, Group, Select, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { deleteTask, toggleTaskCompleted, updateTaskTitle } from '../../features/tasks/tasksSlice';
-import type { TaskFilter } from '../../types/Filters';
+import type { TaskFilter, TaskSort } from '../../types/Filters';
 import { TaskItem } from '../TaskItem/TaskItem';
 import { TaskSearch } from '../TaskSearch/TaskSearch';
 import styles from './TaskList.module.scss';
@@ -13,6 +13,7 @@ export const TaskList = () => {
   const [deleteWithoutConfirm, setDeleteWithoutConfirm] = useState(false);
   const [filter, setFilter] = useState<TaskFilter>('all');
   const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<TaskSort>('dateDesc');
   const dispatch = useAppDispatch();
   const tasks = useAppSelector((state) => state.tasks.tasks);
 
@@ -75,6 +76,23 @@ export const TaskList = () => {
     return true;
   });
 
+  // Сортировка задач
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    if (sort === 'dateAsc') {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    }
+
+    if (sort === 'titleAsc') {
+      return a.title.localeCompare(b.title, 'ru');
+    }
+
+    if (sort === 'titleDesc') {
+      return b.title.localeCompare(a.title, 'ru');
+    }
+
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
   // Текст для пустого списка
   const emptyText = search.trim()
     ? 'По вашему запросу задачи не найдены'
@@ -85,7 +103,7 @@ export const TaskList = () => {
         : 'Список задач пуст, добавьте первую задачу';
 
   // Список задач
-  const items = filteredTasks.map((task) => (
+  const items = sortedTasks.map((task) => (
     <TaskItem
       key={task.id}
       id={task.id}
@@ -118,6 +136,22 @@ export const TaskList = () => {
       />
 
       <TaskSearch value={search} onChange={setSearch} />
+
+      <Select
+        value={sort}
+        onChange={(value) => {
+          if (value) {
+            setSort(value as TaskSort);
+          }
+        }}
+        label="Сортировка"
+        data={[
+          { value: 'dateDesc', label: 'По дате: сначала новые' },
+          { value: 'dateAsc', label: 'По дате: сначала старые' },
+          { value: 'titleAsc', label: 'По названию: А-Я' },
+          { value: 'titleDesc', label: 'По названию: Я-А' },
+        ]}
+      />
 
       <Group gap="xs">
         <Button variant={filter === 'all' ? 'filled' : 'light'} onClick={() => setFilter('all')}>
