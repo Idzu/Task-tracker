@@ -1,14 +1,38 @@
-import { Stack, Text } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
+import { Checkbox, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { toggleTaskCompleted } from '../../features/tasks/tasksSlice';
+import { deleteTask, toggleTaskCompleted } from '../../features/tasks/tasksSlice';
 import { TaskItem } from '../TaskItem/TaskItem';
 import styles from './TaskList.module.scss';
 
 export const TaskList = () => {
   const [isEditing, setIsEditing] = useState<number>(0);
+  const [deleteWithoutConfirm, setDeleteWithoutConfirm] = useState(false);
   const dispatch = useAppDispatch();
   const tasks = useAppSelector((state) => state.tasks.tasks);
+
+  const removeTask = (id: number) => {
+    if (!deleteWithoutConfirm) {
+      const isConfirmed = window.confirm('Удалить задачу?');
+
+      if (!isConfirmed) {
+        return;
+      }
+    }
+
+    dispatch(deleteTask(id));
+
+    if (isEditing === id) {
+      setIsEditing(0);
+    }
+
+    notifications.show({
+      color: 'green',
+      title: 'Успешно',
+      message: 'Задача удалена',
+    });
+  };
 
   const items = tasks.map((task) => (
     <TaskItem
@@ -24,13 +48,21 @@ export const TaskList = () => {
         setIsEditing(task.id);
       }}
       onDelete={() => {
-        console.log('onDelete');
+        removeTask(task.id);
       }}
     />
   ));
 
   return (
     <div className={styles.taskList}>
+      <Checkbox
+        checked={deleteWithoutConfirm}
+        onChange={(event) => {
+          setDeleteWithoutConfirm(event.currentTarget.checked);
+        }}
+        label="Удалять без подтверждения"
+      />
+
       {items.length ? (
         <Stack gap="sm">{items}</Stack>
       ) : (
