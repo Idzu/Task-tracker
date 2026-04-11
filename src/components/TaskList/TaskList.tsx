@@ -1,14 +1,16 @@
 import { notifications } from '@mantine/notifications';
-import { Checkbox, Stack, Text } from '@mantine/core';
+import { Button, Checkbox, Group, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { deleteTask, toggleTaskCompleted, updateTaskTitle } from '../../features/tasks/tasksSlice';
+import type { TaskFilter } from '../../types/Filters';
 import { TaskItem } from '../TaskItem/TaskItem';
 import styles from './TaskList.module.scss';
 
 export const TaskList = () => {
   const [isEditing, setIsEditing] = useState<number>(0);
   const [deleteWithoutConfirm, setDeleteWithoutConfirm] = useState(false);
+  const [filter, setFilter] = useState<TaskFilter>('all');
   const dispatch = useAppDispatch();
   const tasks = useAppSelector((state) => state.tasks.tasks);
 
@@ -52,8 +54,29 @@ export const TaskList = () => {
     });
   };
 
+  // Фильтрация задач
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === 'active') {
+      return !task.completed;
+    }
+
+    if (filter === 'completed') {
+      return task.completed;
+    }
+
+    return true;
+  });
+
+  // Текст для пустого списка
+  const emptyText =
+    filter === 'active'
+      ? 'Нет активных задач'
+      : filter === 'completed'
+        ? 'Нет выполненных задач'
+        : 'Список задач пуст, добавьте первую задачу';
+
   // Список задач
-  const items = tasks.map((task) => (
+  const items = filteredTasks.map((task) => (
     <TaskItem
       key={task.id}
       id={task.id}
@@ -85,11 +108,23 @@ export const TaskList = () => {
         label="Удалять без подтверждения"
       />
 
+      <Group gap="xs">
+        <Button variant={filter === 'all' ? 'filled' : 'light'} onClick={() => setFilter('all')}>
+          Все
+        </Button>
+        <Button variant={filter === 'active' ? 'filled' : 'light'} onClick={() => setFilter('active')}>
+          Активные
+        </Button>
+        <Button variant={filter === 'completed' ? 'filled' : 'light'} onClick={() => setFilter('completed')}>
+          Выполненные
+        </Button>
+      </Group>
+
       {items.length ? (
         <Stack gap="sm">{items}</Stack>
       ) : (
         <Text c="dimmed" className={styles.taskList__empty}>
-          Список задач пуст, добавьте первую задачу
+          {emptyText}
         </Text>
       )}
     </div>
