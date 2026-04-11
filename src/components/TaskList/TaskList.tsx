@@ -6,6 +6,7 @@ import { deleteTask, toggleTaskCompleted, updateTaskTitle } from '../../features
 import type { TaskFilter, TaskSort } from '../../types/Filters';
 import { TaskItem } from '../TaskItem/TaskItem';
 import { TaskSearch } from '../TaskSearch/TaskSearch';
+import { TaskStats } from '../TaskStats/TaskStats';
 import styles from './TaskList.module.scss';
 
 export const TaskList = () => {
@@ -16,6 +17,9 @@ export const TaskList = () => {
   const [sort, setSort] = useState<TaskSort>('dateDesc');
   const dispatch = useAppDispatch();
   const tasks = useAppSelector((state) => state.tasks.tasks);
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((task) => task.completed).length;
+  const activeTasks = totalTasks - completedTasks;
 
   // Удалить задачу
   const removeTask = (id: number) => {
@@ -136,6 +140,8 @@ export const TaskList = () => {
       />
 
       <TaskSearch value={search} onChange={setSearch} />
+
+      <TaskStats total={totalTasks} active={activeTasks} completed={completedTasks} />
 
       <Select
         value={sort}
