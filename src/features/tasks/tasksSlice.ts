@@ -5,6 +5,12 @@ interface TasksState {
   tasks: Task[];
 }
 
+// Поиск задачи по id
+const getTaskById = (tasks: Task[], id: number) => {
+  return tasks.find((task) => task.id === id);
+};
+
+// Загрузка задач из localStorage
 const loadTasks = (): Task[] => {
   const tasks = localStorage.getItem('tasks');
 
@@ -36,7 +42,7 @@ const tasksSlice = createSlice({
       });
     },
     toggleTaskCompleted: (state, action: PayloadAction<number>) => {
-      const currentTask = state.tasks.find((task) => task.id === action.payload);
+      const currentTask = getTaskById(state.tasks, action.payload);
 
       if (!currentTask) {
         return;
@@ -47,8 +53,17 @@ const tasksSlice = createSlice({
     deleteTask: (state, action: PayloadAction<number>) => {
       state.tasks = state.tasks.filter((task) => task.id !== action.payload);
     },
+    updateTaskTitle: (state, action: PayloadAction<{ id: number; title: string }>) => {
+      const currentTask = getTaskById(state.tasks, action.payload.id);
+
+      if (!currentTask) {
+        return;
+      }
+
+      currentTask.title = action.payload.title;
+    },
   },
 });
 
-export const { addTask, toggleTaskCompleted, deleteTask } = tasksSlice.actions;
+export const { addTask, toggleTaskCompleted, deleteTask, updateTaskTitle } = tasksSlice.actions;
 export const tasksReducer = tasksSlice.reducer;

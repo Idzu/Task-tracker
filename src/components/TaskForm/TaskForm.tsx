@@ -1,14 +1,9 @@
 import { notifications } from '@mantine/notifications';
 import { Button, Stack, Textarea, Title } from '@mantine/core';
 import React, { useState } from 'react';
-import z from 'zod';
 import { useAppDispatch } from '../../app/hooks';
 import { addTask } from '../../features/tasks/tasksSlice';
-
-// Схема валидации
-const taskFormSchema = z.object({
-  task: z.string().trim().min(1, 'Поле не должно быть пустым').max(500, 'Максимум 500 символов'),
-});
+import { validateTaskTitle } from '../../validation/task';
 
 export const TaskForm = () => {
   // Состояния
@@ -16,23 +11,12 @@ export const TaskForm = () => {
   const [error, setError] = useState('');
   const dispatch = useAppDispatch();
 
-  // Проверка валидации
-  const validateTask = (v: string) => {
-    const result = taskFormSchema.safeParse({ task: v });
-
-    if (!result.success) {
-      return z.flattenError(result.error).fieldErrors.task?.[0] ?? 'Ошибка валидации';
-    }
-
-    return '';
-  };
-
   // Изменение текста и проверка валидации сразу
   const changeTaskText = (v: string) => {
     setTask(v);
 
     if (error) {
-      setError(validateTask(v));
+      setError(validateTaskTitle(v));
     }
   };
 
@@ -41,7 +25,7 @@ export const TaskForm = () => {
     event.preventDefault();
 
     // Валидация формы
-    const checkErrors = validateTask(task);
+    const checkErrors = validateTaskTitle(task);
     if (checkErrors) {
       return setError(checkErrors);
     }

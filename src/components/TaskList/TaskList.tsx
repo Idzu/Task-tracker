@@ -2,7 +2,7 @@ import { notifications } from '@mantine/notifications';
 import { Checkbox, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { deleteTask, toggleTaskCompleted } from '../../features/tasks/tasksSlice';
+import { deleteTask, toggleTaskCompleted, updateTaskTitle } from '../../features/tasks/tasksSlice';
 import { TaskItem } from '../TaskItem/TaskItem';
 import styles from './TaskList.module.scss';
 
@@ -12,6 +12,7 @@ export const TaskList = () => {
   const dispatch = useAppDispatch();
   const tasks = useAppSelector((state) => state.tasks.tasks);
 
+  // Удалить задачу
   const removeTask = (id: number) => {
     if (!deleteWithoutConfirm) {
       const isConfirmed = window.confirm('Удалить задачу?');
@@ -34,9 +35,28 @@ export const TaskList = () => {
     });
   };
 
+  // Отменить редактирование
+  const cancelEditTask = () => {
+    setIsEditing(0);
+  };
+
+  // Сохранить редактирование
+  const saveEditTask = (id: number, title: string) => {
+    dispatch(updateTaskTitle({ id, title }));
+    setIsEditing(0);
+
+    notifications.show({
+      color: 'green',
+      title: 'Успешно',
+      message: 'Задача обновлена',
+    });
+  };
+
+  // Список задач
   const items = tasks.map((task) => (
     <TaskItem
       key={task.id}
+      id={task.id}
       title={task.title}
       completed={task.completed}
       createdAt={task.createdAt}
@@ -47,6 +67,8 @@ export const TaskList = () => {
       onEdit={() => {
         setIsEditing(task.id);
       }}
+      onCancelEdit={cancelEditTask}
+      onSaveEdit={saveEditTask}
       onDelete={() => {
         removeTask(task.id);
       }}

@@ -7,24 +7,51 @@
 
   &_completed {
     background: var(--color-bg-page);
-    border-color: var(--color-bg-disabled);
+    border-color: var(--color-border-primary);
   }
 
   &__content {
     display: flex;
-
     flex-direction: column;
     gap: var(--space-xs);
   }
 
+  &__edit {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-sm);
+  }
+
+  &__textarea {
+    width: 100%;
+  }
+
+  &__textareaInput {
+    width: 100%;
+  }
+
   &__title {
     color: var(--color-text-primary);
+    white-space: pre-line;
     word-break: break-word;
+
+    &_collapsed {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
 
     &_completed {
       color: var(--color-text-secondary);
       text-decoration: line-through;
       word-break: break-word;
     }
+  }
+
+  &__toggle {
+    align-self: flex-start;
+    padding: 0;
   }
 }
