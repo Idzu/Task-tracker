@@ -117,7 +117,7 @@ npm run lint
 
 ### Демонстрация проекта
 
-[Видео проекта](./docs/video/demo.webm)
+[demo.webm](https://github.com/user-attachments/assets/8c7aafac-29e2-49a5-a211-02ada76df7cc)
 
 ## TODO
 
