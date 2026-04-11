@@ -19,7 +19,7 @@ export const TaskItem = ({ title, completed, createdAt, isEditing = false, onCha
   };
 
   return (
-    <div className={styles.taskItem}>
+    <div className={completed ? `${styles.taskItem} ${styles.taskItem_completed}` : styles.taskItem}>
       <Group justify="space-between" align="flex-start" wrap="nowrap" gap="md">
         {/* Вывод задач */}
         <Group align="flex-start" wrap="nowrap" gap="sm" className={styles.taskItem__main}>

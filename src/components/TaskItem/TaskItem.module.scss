@@ -5,6 +5,11 @@
   border-radius: var(--radius-md);
   background: var(--color-bg-surface);
 
+  &_completed {
+    background: var(--color-bg-page);
+    border-color: var(--color-bg-disabled);
+  }
+
   &__content {
     display: flex;
 
@@ -18,6 +23,7 @@
 
     &_completed {
       color: var(--color-text-secondary);
+      text-decoration: line-through;
       word-break: break-word;
     }
   }

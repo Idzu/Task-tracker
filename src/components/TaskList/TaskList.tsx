@@ -1,11 +1,13 @@
 import { Stack, Text } from '@mantine/core';
 import { useState } from 'react';
-import { useAppSelector } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { toggleTaskCompleted } from '../../features/tasks/tasksSlice';
 import { TaskItem } from '../TaskItem/TaskItem';
 import styles from './TaskList.module.scss';
 
 export const TaskList = () => {
   const [isEditing, setIsEditing] = useState<number>(0);
+  const dispatch = useAppDispatch();
   const tasks = useAppSelector((state) => state.tasks.tasks);
 
   const items = tasks.map((task) => (
@@ -16,7 +18,7 @@ export const TaskList = () => {
       createdAt={task.createdAt}
       isEditing={task.id === isEditing}
       onChangeCompleted={() => {
-        console.log('onChangeCompleted');
+        dispatch(toggleTaskCompleted(task.id));
       }}
       onEdit={() => {
         setIsEditing(task.id);
