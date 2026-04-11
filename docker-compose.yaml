@@ -1,0 +1,7 @@
+services:
+  task-tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '4287:4287'

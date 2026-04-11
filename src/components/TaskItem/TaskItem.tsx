@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Checkbox, Group, Text, Textarea } from '@mantine/core';
 import dayjs from 'dayjs';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './TaskItem.module.scss';
 import { validateTaskTitle } from '../../validation/task';
 
